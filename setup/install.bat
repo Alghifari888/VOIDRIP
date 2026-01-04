@@ -1,51 +1,101 @@
 @echo off
-TITLE VOIDRIP Installer for Windows
+TITLE VOIDRIP Installer (Windows) - github.com/alghifari888
 CLS
 color 0b
 
-ECHO ==================================================
-ECHO      VOIDRIP v2.0 - Windows Installer
-ECHO ==================================================
+:: --- HEADER ---
+ECHO ==========================================================
+ECHO      VOIDRIP v2.0 - ULTIMATE WINDOWS INSTALLER
+ECHO      Created by: github.com/alghifari888
+ECHO ==========================================================
 ECHO.
 
-:: 1. Cek apakah Python sudah terinstall
+:: --- 1. CEK ADMIN (AUTO ELEVATE) ---
+:: Script ini butuh Admin untuk mendaftarkan PATH
+NET SESSION >nul 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    ECHO [INFO] Administrator privileges detected. Good.
+) ELSE (
+    ECHO [WARN] Meminta akses Administrator untuk setup sistem...
+    ECHO.
+    PowerShell -Command "Start-Process '%~dpnx0' -Verb RunAs"
+    EXIT
+)
+
+:: --- 2. CEK PYTHON ---
+ECHO [*] Mengecek instalasi Python...
 python --version >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
     color 0c
-    ECHO [!] ERROR: Python tidak terdeteksi!
-    ECHO     Silakan install Python dari python.org dan
-    ECHO     pastikan centang "Add Python to PATH" saat install.
+    ECHO [!] ERROR: Python tidak ditemukan!
+    ECHO.
+    ECHO Solusi:
+    ECHO 1. Download Python di python.org
+    ECHO 2. PENTING: Centang "Add Python to PATH" saat install.
     PAUSE
-    EXIT /B
+    EXIT
+) ELSE (
+    ECHO [OK] Python terdeteksi.
 )
 
-:: 2. Install Library dari requirements.txt
+:: --- 3. INSTALL REQUIREMENTS ---
+ECHO.
 ECHO [*] Menginstall Library Python...
 pip install -r ..\requirements.txt
 IF %ERRORLEVEL% NEQ 0 (
     color 0c
-    ECHO [!] Gagal menginstall library. Cek koneksi internet Anda.
+    ECHO [!] Gagal download library. Cek internet Anda!
     PAUSE
-    EXIT /B
+    EXIT
 )
 
-:: 3. Buat Launcher "voidrip.bat" di folder utama
+:: --- 4. CEK FFMPEG (FITUR PINTAR) ---
 ECHO.
-ECHO [*] Membuat shortcut perintah...
+ECHO [*] Mengecek FFmpeg (Wajib untuk Audio/MP3)...
+where ffmpeg >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    color 0e
+    ECHO [!] WARNING: FFmpeg belum terinstall!
+    ECHO     Fitur convert MP3 mungkin tidak jalan.
+    ECHO.
+    ECHO [*] Membuka halaman download FFmpeg otomatis...
+    timeout /t 3 >nul
+    start https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z
+    ECHO.
+    ECHO [TIPS] Extract file tadi, lalu copy 'ffmpeg.exe' ke folder ini.
+) ELSE (
+    ECHO [OK] FFmpeg sudah terinstall. Mantap!
+)
+
+:: --- 5. SETUP GLOBAL PATH & SHORTCUT ---
+ECHO.
+ECHO [*] Mengkonfigurasi Global Command...
+
+:: Masuk ke folder root project (Mundur satu langkah dari setup)
 cd ..
+SET "PROJECT_DIR=%CD%"
+
+:: Buat wrapper batch file
 (
 ECHO @echo off
-ECHO python "%%~dp0main.py" %%*
-) > voidrip.bat
+ECHO python "%PROJECT_DIR%\main.py" %%*
+) > "%PROJECT_DIR%\voidrip.bat"
 
-ECHO [OK] Shortcut 'voidrip.bat' berhasil dibuat.
+:: Tambahkan Folder Project ke User Environment PATH (PowerShell Magic)
+:: Ini yang bikin user bisa ketik 'voidrip' dari mana saja
+ECHO [*] Mendaftarkan '%PROJECT_DIR%' ke System PATH...
+PowerShell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';%PROJECT_DIR%', 'User')"
+
 ECHO.
-ECHO ==================================================
-ECHO    INSTALASI SUKSES!
-ECHO ==================================================
+ECHO ==========================================================
+ECHO    INSTALASI SELESAI - SUKSES!
+ECHO ==========================================================
 ECHO.
-ECHO CARA PAKAI DI WINDOWS:
-ECHO 1. Buka CMD di folder folder VOIDRIP ini.
-ECHO 2. Ketik perintah: voidrip video "URL"
+ECHO PENTING:
+ECHO Agar perintah 'voidrip' bisa dipakai global:
+ECHO 1. Tutup jendela CMD ini.
+ECHO 2. Buka CMD baru.
+ECHO 3. Ketik 'voidrip'.
 ECHO.
+ECHO Regards, github.com/alghifari888
 PAUSE
