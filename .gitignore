@@ -1,21 +1,26 @@
-# Byte-compiled / optimized / DLL files
+cat << 'EOF' > .gitignore
+# System / Environment
 __pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual Environments
 venv/
 env/
 .env
+.DS_Store
 
-# Downloaded Media (Supaya hasil download tidak naik ke GitHub)
+# Downloaded Media (Hasil Download)
 *.mp4
 *.mp3
 *.m4a
 *.webm
+*.jpg
+*.jpeg
+*.png
+*.webp
 *.part
 *.ytdl
-
-# Logs
-*.log
 downloaded.txt
+
+# Python System Files (Yang tidak sengaja terbuat)
+argparse
+sys
+time
+EOF
