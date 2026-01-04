@@ -1,37 +1,52 @@
 #!/bin/bash
-# VOIDRIP Auto-Installer
+# VOIDRIP Auto-Installer (Ultimate Version)
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
-NC='\033[0m'
+NC='\033[0m' # No Color
 
 echo -e "${CYAN}:: VOIDRIP Installer v2.0${NC}"
 
-# 1. Cek Root
+# 1. Cek Root (Wajib Sudo)
 if [ "$EUID" -ne 0 ]; then 
-    echo -e "${RED}[!] Please run as root (sudo)${NC}"
+    echo -e "${RED}[!] Harap jalankan menggunakan sudo!${NC}"
+    echo -e "Contoh: sudo ./install.sh"
     exit 1
 fi
 
-# 2. Install System Deps
-echo -e "\n${CYAN}:: Installing System Dependencies...${NC}"
-apt update && apt install -y python3 python3-pip python3-venv ffmpeg
+# 2. Deteksi Lokasi Folder Secara Otomatis (DINAMIS)
+# Script ini akan mencari tahu sendiri dia ada di folder mana
+# Walaupun usernya bukan 'alghifari888', dia akan tetap tahu.
+SETUP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PROJECT_DIR="$(dirname "$SETUP_DIR")"
+MAIN_FILE="$PROJECT_DIR/main.py"
 
-# 3. Install Python Libs
-echo -e "\n${CYAN}:: Installing Python Libraries...${NC}"
-# Mundur satu folder ke root untuk cari requirements.txt
-pip3 install -r ../requirements.txt --break-system-packages
+echo -e "\n${CYAN}:: Mendeteksi lokasi project...${NC}"
+echo -e "   Lokasi: $PROJECT_DIR"
 
-# 4. Setup Global Command
-echo -e "\n${CYAN}:: Setting up shortcut...${NC}"
-# Mencari path absolut ke main.py dari folder setup
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
-MAIN_FILE="$ROOT_DIR/main.py"
+# 3. Install Dependencies
+echo -e "\n${CYAN}:: Menginstall kebutuhan sistem...${NC}"
+apt update -qq
+apt install -y python3 python3-pip ffmpeg > /dev/null 2>&1
+pip3 install -r "$PROJECT_DIR/requirements.txt" --break-system-packages
 
+# 4. MEMBUAT LAUNCHER (Ini Rahasianya)
+# Kita buat file 'jembatan' di /usr/local/bin/voidrip
+# Isinya memaksa Linux masuk ke folder project lalu panggil Python
+echo -e "\n${CYAN}:: Membuat Launcher Global...${NC}"
+
+cat > /usr/local/bin/voidrip <<EOF
+#!/bin/bash
+# Launcher Otomatis VOIDRIP
+cd "$PROJECT_DIR"
+exec python3 main.py "\$@"
+EOF
+
+# 5. Beri Izin Eksekusi
+chmod +x /usr/local/bin/voidrip
 chmod +x "$MAIN_FILE"
-ln -sf "$MAIN_FILE" /usr/local/bin/voidrip
 
-echo -e "\n${GREEN}[✓] Installation Complete!${NC}"
-echo -e "Run using command: ${CYAN}voidrip${NC}"
+echo -e "\n${GREEN}[✓] INSTALASI BERHASIL 100%!${NC}"
+echo -e "Sekarang Anda (atau siapapun) bisa menjalankannya dengan mengetik:"
+echo -e "${CYAN}voidrip${NC}"

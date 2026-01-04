@@ -1,0 +1,48 @@
+INSTALASI PERTAMA KALI:
+# 1. Clone atau download lewat git
+git clone https://github.com/alghifari888/voidrip.git
+cd voidrip
+
+# 2. Beri izin eksekusi install
+chmod +x install.sh
+
+# 3. Jalankan installer
+sudo ./install.sh
+
+# Atau jika tanpa sudo (di beberapa sistem):
+bash install.sh
+
+CARA MENGGUNAKAN:
+# Download video dengan resolusi default (1080p)
+voidrip video "https://youtube.com/watch?v=contoh"
+
+# Download video dengan resolusi 720p (di sarankan mengunakan ini)
+voidrip video "URL_VIDEO" --res 720
+
+# Download video dengan nama custom (untuk custom nama file)
+voidrip video "URL_VIDEO" -o "video_ku.mp4"
+
+# Contoh lengkap:
+voidrip video "https://youtu.be/2MWlVYsS9Ow?si=KyOayhFg_Hs397hq" --res 720 -o "rickroll.mp4"
+
+DOWNLOAD AUDIO (MP3): 
+# Download audio default quality
+voidrip audio "https://youtube.com/watch?v=contoh"
+
+# Download audio dengan nama custom
+voidrip audio "URL_VIDEO" -o "lagu_favorit.mp3"
+
+# Contoh:
+voidrip audio "https://youtu.be/123456" -o "musik.mp3"
+
+PERINTAH BANTU:
+# Tampilkan help/usage
+voidrip --help
+
+# Tampilkan help untuk command tertentu
+voidrip video --help
+voidrip audio --help
+voidrip playlist --help
+
+# Cek versi (jika ada)
+voidrip --version
