@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # Copyright 2026 github.com/alghifari888
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,70 +20,95 @@ import time
 from colorama import init as colorama_init
 
 # Import Modules
-from ui.banner import show_banner, show_header, show_footer
-from ui.display import ui_print, loading_animation
-from core import downloader, utils
+try:
+    from ui.banner import show_banner, show_header, show_footer
+    from ui.display import ui_print, loading_animation
+    from core import downloader, utils
+except ImportError as e:
+    print(f"Error: Module corrupt ({e}). Harap install ulang.")
+    sys.exit(1)
 
-# Inisialisasi warna untuk Windows
+# Inisialisasi warna Windows
 colorama_init(autoreset=True)
 
+# --- TEKS BANTUAN SIMPEL ---
+CUSTOM_HELP_TEXT = """
+\033[1;33mCARA MENGGUNAKAN:\033[0m
+ 
+  # Download video dengan resolusi 720p (di sarankan mengunakan ini)
+  voidrip video "URL_VIDEO" --res 720
+
+  # Download dengan nama custom (sesuaikan nama file) (di sarankan mengunakan ini)
+  voidrip video "https://youtu.be/2MWlVYsS9Ow?si=KyOayhFg_Hs397hq" --res 720 -o "test.mp4"
+
+\033[1;33mDOWNLOAD AUDIO (MP3):\033[0m
+  # Download audio default quality (di sarankan mengunakan ini)
+  voidrip audio "https://youtube.com/watch?v=contoh"
+
+  # Download audio dengan nama custom (seuaikan nama file)
+  voidrip audio "URL_VIDEO" -o "lagu_favorit.mp3"
+
+\033[1;33mPERINTAH BANTU:\033[0m
+  # Tampilkan help/usage
+  voidrip --help
+  voidrip video --help
+  voidrip audio --help
+  voidrip playlist --help
+  voidrip --version
+"""
+
 def main():
-    # 1. Setup Argument Parser
     parser = argparse.ArgumentParser(
         prog="voidrip",
-        description="VOIDRIP - High Speed Terminal Downloader",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog=CUSTOM_HELP_TEXT
     )
     
+    parser.add_argument('--version', action='version', version='VOIDRIP v2.0')
     sub = parser.add_subparsers(dest="cmd", metavar="<command>")
     
-    # Video Command
+    # Video
     v = sub.add_parser("video", help="Download Video (MP4)")
     v.add_argument("url", help="Target URL")
     v.add_argument("--res", default="1080", choices=["360", "480", "720", "1080", "1440", "2160"], help="Resolution")
     v.add_argument("-o", "--output", default="%(title)s.%(ext)s", help="Output filename")
 
-    # Audio Command
+    # Audio
     a = sub.add_parser("audio", help="Download Audio (MP3)")
     a.add_argument("url", help="Target URL")
     a.add_argument("--bitrate", default="192", help="Bitrate (kbps)")
     a.add_argument("-o", "--output", default="%(title)s.%(ext)s", help="Output filename")
 
-    # Playlist Command
+    # Playlist
     p = sub.add_parser("playlist", help="Download Playlist")
     p.add_argument("url", help="Target URL")
     p.add_argument("-o", "--output", default="%(playlist_title)s/%(title)s.%(ext)s", help="Output directory")
     p.add_argument("--start", type=int, help="Start item")
     p.add_argument("--end", type=int, help="End item")
 
-    # Jika dijalankan tanpa argumen
+    # TAMPILKAN HELP JIKA TANPA ARGUMEN
     if len(sys.argv) == 1:
         show_banner()
-        parser.print_help()
+        print(CUSTOM_HELP_TEXT)
         sys.exit(0)
 
     args = parser.parse_args()
 
-    # 2. Tampilan Awal
     show_banner()
     show_header()
     
-    # 3. System Check & Info
-    os_info = utils.get_os_info()
-    ui_print(f"HOST: {os_info['node']:<20} OS: {os_info['system']:<10}", "info")
-    print("\033[38;5;51m" + "─" * 58 + "\033[0m")
-
-    # Cek apakah FFmpeg ada (Penting untuk Windows/Linux)
-    missing_deps = utils.check_system_deps()
-    if missing_deps:
-        ui_print(f"Warning: {', '.join(missing_deps)} not found!", "warn")
-        ui_print("Beberapa fitur (convert mp3/merge video) mungkin gagal.", "warn")
-        time.sleep(2)
-
     try:
-        # 4. Eksekusi
-        ui_print(f"Processing {args.cmd.upper()} request...", "step")
-        loading_animation("Initializing connection...")
+        os_info = utils.get_os_info()
+        ui_print(f"HOST: {os_info['node']:<20} OS: {os_info['system']:<10}", "info")
+        print("\033[38;5;51m" + "─" * 58 + "\033[0m")
+
+        missing = utils.check_system_deps()
+        if missing:
+            ui_print(f"Warning: {', '.join(missing)} not found!", "warn")
+            time.sleep(2)
+            
+        ui_print(f"Processing {args.cmd.upper()}...", "step")
+        loading_animation("Connecting...")
         
         success = False
         print("\033[38;5;51m" + "─" * 58 + "\033[0m")
@@ -96,10 +124,10 @@ def main():
 
     except KeyboardInterrupt:
         print("\n")
-        ui_print("Process interrupted", "error")
+        ui_print("Interrupted by user", "error")
         show_footer(False)
     except Exception as e:
-        ui_print(f"Unexpected Error: {e}", "error")
+        ui_print(f"Error: {e}", "error")
         show_footer(False)
 
 if __name__ == "__main__":
