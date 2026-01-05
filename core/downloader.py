@@ -17,27 +17,22 @@ import os
 from ui.display import ui_print
 
 def ensure_directory(path_pattern):
-    """
-    Fitur User Friendly: Otomatis membuat folder jika belum ada.
-    Contoh: User set output ke 'Musik/Lagu.mp3', maka folder 'Musik' dibuatkan.
-    """
+    """Memastikan folder tujuan tersedia sebelum download."""
     try:
-        # Ambil nama folder dari path output
         directory = os.path.dirname(path_pattern)
-        
-        # Hanya buat folder jika pathnya bukan kosong dan bukan template yt-dlp (yang ada %)
-        # yt-dlp biasanya handle template folder sendiri, tapi untuk path statis kita bantu.
+        # Hanya buat folder jika path valid dan bukan template
         if directory and "%" not in directory:
             if not os.path.exists(directory):
                 os.makedirs(directory, exist_ok=True)
-                ui_print(f"Membuat folder otomatis: {directory}/", "info")
-    except Exception as e:
-        # Jangan stop program cuma gara-gara gagal bikin folder, biarkan yt-dlp coba lanjut
+                ui_print(f"Auto-create directory: {directory}/", "info")
+    except Exception:
         pass
 
 def run_yt(args, verbose=False):
-    """Wrapper untuk menjalankan yt-dlp"""
-    base_cmd = ["yt-dlp", "--no-warnings"]
+    """Wrapper eksekusi yt-dlp dengan konfigurasi High Speed."""
+    # --- TURBO MODE: 16 FRAGMENTS ---
+    # Memaksa download 16 bagian sekaligus untuk max speed
+    base_cmd = ["yt-dlp", "--no-warnings", "--concurrent-fragments", "16"]
     
     if not verbose:
         base_cmd.append("--progress")
@@ -49,20 +44,19 @@ def run_yt(args, verbose=False):
     try:
         subprocess.run(cmd, check=True)
         return True
-    except subprocess.CalledProcessError as e:
-        # Error code biasa yt-dlp (misal skip video)
+    except subprocess.CalledProcessError:
         return False
     except FileNotFoundError:
-        ui_print("yt-dlp tidak ditemukan. Pastikan requirements.txt sudah diinstall.", "error")
+        ui_print("Error: yt-dlp/FFmpeg not found. Check requirements.", "error")
         return False
     except KeyboardInterrupt:
-        ui_print("Download dibatalkan user.", "warn")
+        ui_print("Download cancelled by user.", "warn")
         return False
 
 def download_video(url, res, out_pattern):
-    # Cek dan buat folder dulu
     ensure_directory(out_pattern)
     
+    # Format: Video Best + Audio Best -> Merge MP4
     format_str = f"bv*[height<={res}][ext=mp4]+ba[ext=m4a]/b[height<={res}]"
     
     args = [
@@ -78,13 +72,12 @@ def download_video(url, res, out_pattern):
     return run_yt(args)
 
 def download_audio(url, bitrate, out_pattern):
-    # Cek dan buat folder dulu
     ensure_directory(out_pattern)
     
     args = [
         "-x",
         "--audio-format", "mp3",
-        "--audio-quality", "0",
+        "--audio-quality", "0", # 0 = Best Quality (VBR)
         "--embed-thumbnail",
         "--embed-metadata",
         "--restrict-filenames",
@@ -95,7 +88,6 @@ def download_audio(url, bitrate, out_pattern):
     return run_yt(args)
 
 def download_playlist(url, out_pattern, start, end):
-    # Cek dan buat folder dulu
     ensure_directory(out_pattern)
     
     args = [
