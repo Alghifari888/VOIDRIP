@@ -31,6 +31,7 @@ clear
 echo -e "${CYAN}======================================================${NC}"
 echo -e "${CYAN}   VOIDRIP v2.0 :: ULTIMATE LINUX INSTALLER           ${NC}"
 echo -e "${CYAN}   Created by: github.com/alghifari888                ${NC}"
+echo -e "${CYAN}   LICENSE: Apache 2.0                                ${NC}"
 echo -e "${CYAN}======================================================${NC}\n"
 
 # 1. CEK ROOT
@@ -84,8 +85,11 @@ echo -e "${GREEN} [DONE]${NC}"
 
 # 6. SELESAI
 echo -e "\n${GREEN}======================================================${NC}"
-echo -e "${GREEN}   INSTALASI SUKSES! SIAP DIGUNAKAN.                  ${NC}"
-echo -e "${GREEN}======================================================${NC}"
+echo -e "${GREEN}   INSTALASI SUKSES! SIAP DIGUNAKAN.                    ${NC}"
+echo -e "${GREEN}   VOIDRIP v2.0 - ULTIMATE LINUX INSTALLER              ${NC}"
+echo -e "${GREEN}   Created by: github.com/alghifari888                  ${NC}"
+echo -e "${GREEN}   LICENSE: Apache 2.0                                  ${NC}"
+echo -e "${GREEN}========================================================${NC}"
 echo -e "Ketik perintah ini di mana saja:"
 echo -e "   ${CYAN}voidrip${NC}          (Untuk bantuan)"
 echo -e "   ${CYAN}voidrip video ...${NC} (Untuk download)"

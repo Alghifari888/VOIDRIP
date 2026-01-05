@@ -7,10 +7,11 @@ CLS
 color 0b
 
 :: --- HEADER ---
-ECHO ==========================================================
+ECHO ========================================================================
 ECHO      VOIDRIP v2.0 - ULTIMATE WINDOWS INSTALLER
 ECHO      Created by: github.com/alghifari888
-ECHO ==========================================================
+ECHO      LICENSE: Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+ECHO ========================================================================
 ECHO.
 
 :: --- 1. CEK ADMIN (AUTO ELEVATE) ---
@@ -91,9 +92,12 @@ ECHO [*] Mendaftarkan '%PROJECT_DIR%' ke System PATH...
 PowerShell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';%PROJECT_DIR%', 'User')"
 
 ECHO.
-ECHO ==========================================================
+ECHO ======================================================================
 ECHO    INSTALASI SELESAI - SUKSES!
-ECHO ==========================================================
+ECHO    VOIDRIP v2.0 - ULTIMATE WINDOWS INSTALLER
+ECHO    Created by: github.com/alghifari888
+ECHO    LICENSE: Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+ECHO ======================================================================
 ECHO.
 ECHO PENTING:
 ECHO Agar perintah 'voidrip' bisa dipakai global:
