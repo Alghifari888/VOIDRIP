@@ -1,6 +1,12 @@
 
 # ⚡ VOIDRIP v2.0 :: High Speed Terminal Downloader
 
+<div align="center">
+  <img src="gambar1.png" alt="VOIDRIP Main Menu" width="100%">
+</div>
+
+<br>
+
 ![Python](https://img.shields.io/badge/Language-Python%203.8%2B-blue?logo=python)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-brightgreen)
 ![License](https://img.shields.io/badge/License-Apache%202.0-orange)
@@ -151,6 +157,9 @@ voidrip
 ---
 
 ## 📖 Cara Penggunaan (Usage Examples)
+<div align="center"> <img src="gambar1.png" alt="VOIDRIP Example" width="80%"> </div>
+<br>
+<div align="center"> <img src="gambar2.png" alt="VOIDRIP Example" width="80%"> </div>
 
 **1. Download Video (MP4)**
 

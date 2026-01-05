@@ -51,6 +51,7 @@ def show_banner():
     print(f"   {C_GREY}PROJECT :{C_WHITE} HIGH SPEED DOWNLOADER {C_ACCENT}v2.0")
     print(f"   {C_GREY}AUTHOR  :{C_WHITE} alghifari888")
     print(f"   {C_GREY}GITHUB  :{C_WHITE} github.com/alghifari888")
+    print(f"   {C_GREY}LICENSE :{C_WHITE} Apache License 2.0")
     print(f"{C_DARK}   {'//' * 30}{C_RESET}\n")
 
 def show_header():
