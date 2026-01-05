@@ -1,4 +1,7 @@
 @echo off
+:: Perintah ini memaksa CMD pindah ke folder tempat file ini berada
+cd /d "%~dp0"
+
 TITLE VOIDRIP Installer (Windows) - github.com/alghifari888
 CLS
 color 0b
@@ -41,6 +44,8 @@ IF %ERRORLEVEL% NEQ 0 (
 :: --- 3. INSTALL REQUIREMENTS ---
 ECHO.
 ECHO [*] Menginstall Library Python...
+:: sudah lock lokasi dengan cd /d "%~dp0",
+:: perintah ..\requirements.txt.
 pip install -r ..\requirements.txt
 IF %ERRORLEVEL% NEQ 0 (
     color 0c
@@ -82,7 +87,6 @@ ECHO python "%PROJECT_DIR%\main.py" %%*
 ) > "%PROJECT_DIR%\voidrip.bat"
 
 :: Tambahkan Folder Project ke User Environment PATH (PowerShell Magic)
-:: Ini yang bikin user bisa ketik 'voidrip' dari mana saja
 ECHO [*] Mendaftarkan '%PROJECT_DIR%' ke System PATH...
 PowerShell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';%PROJECT_DIR%', 'User')"
 
