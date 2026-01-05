@@ -74,6 +74,7 @@ def main():
     
     parser.add_argument('--version', action='version', version='VOIDRIP v2.0')
     sub = parser.add_subparsers(dest="cmd", metavar="<command>")
+    parser.add_argument('--update', action='store_true', help='Update System Core (yt-dlp)')
     
     # Video Command
     v = sub.add_parser("video", help="Download Video (MP4)")
@@ -101,6 +102,11 @@ def main():
         sys.exit(0)
 
     args = parser.parse_args()
+    if args.update:
+        show_banner()
+        if utils.update_core():
+            print("\nSilakan jalankan ulang program.")
+        sys.exit(0)
 
     show_banner()
     show_header()

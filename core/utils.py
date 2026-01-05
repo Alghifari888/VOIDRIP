@@ -15,6 +15,8 @@ import shutil
 import platform
 import os
 import sys
+import subprocess
+from ui.display import ui_print
 
 # Kita import ui_print agar pesan warning terlihat rapi
 try:
@@ -57,5 +59,29 @@ def get_os_info():
         "release": platform.release()
     }
 
+def update_core():
+    """Melakukan update otomatis pada library yt-dlp"""
+    ui_print("Mengecek pembaruan sistem...", "step")
+    try:
+        # Perintah dasar pip install update
+        cmd = [sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"]
+        
+        # --- PERBAIKAN KHUSUS KALI LINUX / DEBIAN ---
+        # Menambahkan flag '--break-system-packages' agar bisa bypass error PEP 668
+        cmd.append("--break-system-packages")
+        
+        subprocess.check_call(cmd)
+        
+        ui_print("Update berhasil! System Core sudah versi terbaru.", "info")
+        return True
+    except subprocess.CalledProcessError:
+        ui_print("Gagal melakukan update otomatis.", "error")
+        return False
+    except Exception as e:
+        ui_print(f"Error Update: {e}", "error")
+        return False
+
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+    
