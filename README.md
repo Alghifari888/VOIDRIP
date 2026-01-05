@@ -2,7 +2,7 @@
 # ⚡ VOIDRIP v2.0 :: High Speed Terminal Downloader
 
 <div align="center">
-  <img src="gambar1.png" alt="VOIDRIP Main Menu" width="100%">
+  <img src="gambar1.png"  width="100%">
 </div>
 
 <br>
@@ -157,9 +157,9 @@ voidrip
 ---
 
 ## 📖 Cara Penggunaan (Usage Examples)
-<div align="center"> <img src="gambar1.png" alt="VOIDRIP Example" width="80%"> </div>
+<div align="center"> <img src="gambar1.png"  width="80%"> </div>
 <br>
-<div align="center"> <img src="gambar2.png" alt="VOIDRIP Example" width="80%"> </div>
+<div align="center"> <img src="gambar2.png"  width="80%"> </div>
 
 **1. Download Video (MP4)**
 
