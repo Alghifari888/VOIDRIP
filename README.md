@@ -6,8 +6,6 @@
 ![License](https://img.shields.io/badge/License-Apache%202.0-orange)
 ![Version](https://img.shields.io/badge/Version-2.0.0-purple)
 
-**Repository:** [https://github.com/Alghifari888/VOIDRIP](https://github.com/Alghifari888/VOIDRIP)
-
 ---
 
 ## 📖 Penjelasan Singkat
