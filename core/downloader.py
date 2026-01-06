@@ -81,7 +81,6 @@ def download_audio(url, bitrate, out_pattern):
         "--embed-thumbnail",
         "--embed-metadata",
         "--restrict-filenames",
-        "--prefer-ffmpeg",
         "-o", out_pattern,
         url
     ]
