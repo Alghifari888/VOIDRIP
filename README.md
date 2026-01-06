@@ -139,7 +139,7 @@ voidrip
 
 1. **Persiapan:**
 * Install Python dari [python.org](https://www.python.org/) (Centang **"Add Python to PATH"**).
-* (Disarankan) Download [FFmpeg](https://ffmpeg.org/download.html) dan taruh `ffmpeg.exe` di folder project.
+* (Disarankan) Download [FFmpeg](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z) dan taruh `ffmpeg.exe` di folder project.
 
 
 2. **Install:**
