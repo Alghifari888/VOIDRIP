@@ -66,6 +66,25 @@ def get_save_location(out_arg):
         return os.path.abspath(out_arg)
 
 def main():
+    # --- SMART STORAGE LOGIC (AUTO DETECT USER) ---
+    # Mendapatkan Home Directory User yang sedang login (misal: /home/alghifari888 atau C:\Users\Japra)
+    home_dir = os.path.expanduser("~")
+    
+    if os.name == 'nt': # Jika Windows
+        # Request: C:\Users\User\Voidrip\Hasilvoidrip
+        base_dir = os.path.join(home_dir, "Voidrip", "Hasilvoidrip")
+    else: # Jika Linux / Mac
+        # Request: /home/User/Hasilvoidrip
+        base_dir = os.path.join(home_dir, "Hasilvoidrip")
+        
+    # Menyiapkan Template Path Default
+    # os.path.join akan otomatis pakai backslash (\) di Windows dan slash (/) di Linux
+    default_video = os.path.join(base_dir, "%(title)s.%(ext)s")
+    default_audio = os.path.join(base_dir, "%(title)s.%(ext)s")
+    default_playlist = os.path.join(base_dir, "%(playlist_title)s", "%(title)s.%(ext)s")
+
+    # ------------------------------------------------
+
     parser = argparse.ArgumentParser(
         prog="voidrip",
         formatter_class=argparse.RawTextHelpFormatter,
@@ -80,18 +99,21 @@ def main():
     v = sub.add_parser("video", help="Download Video (MP4)")
     v.add_argument("url", help="Target URL")
     v.add_argument("--res", default="1080", choices=["360", "480", "720", "1080", "1440", "2160"], help="Resolution")
-    v.add_argument("-o", "--output", default="%(title)s.%(ext)s", help="Output filename")
+    # Update Default Output menggunakan variabel smart path
+    v.add_argument("-o", "--output", default=default_video, help="Output filename")
 
     # Audio Command
     a = sub.add_parser("audio", help="Download Audio (MP3)")
     a.add_argument("url", help="Target URL")
     a.add_argument("--bitrate", default="192", help="Bitrate (kbps)")
-    a.add_argument("-o", "--output", default="%(title)s.%(ext)s", help="Output filename")
+    # Update Default Output
+    a.add_argument("-o", "--output", default=default_audio, help="Output filename")
 
     # Playlist Command
     p = sub.add_parser("playlist", help="Download Playlist")
     p.add_argument("url", help="Target URL")
-    p.add_argument("-o", "--output", default="%(playlist_title)s/%(title)s.%(ext)s", help="Output directory")
+    # Update Default Output (Untuk playlist otomatis buat subfolder nama playlistnya)
+    p.add_argument("-o", "--output", default=default_playlist, help="Output directory")
     p.add_argument("--start", type=int, help="Start item")
     p.add_argument("--end", type=int, help="End item")
 
