@@ -32,27 +32,29 @@ except ImportError as e:
 # Inisialisasi warna Windows
 colorama_init(autoreset=True)
 
-# --- CONFIGURATION & HELP ---
+# --- CONFIGURATION & HELP (UPDATED) ---
 CUSTOM_HELP_TEXT = """
-\033[1;33mCARA MENGGUNAKAN:\033[0m
+\033[1;33mCARA MENGGUNAKAN (STANDARD):\033[0m
  
-  # Download video dengan resolusi 720p (Recommended)
+  # Download video ke folder otomatis 'Hasilvoidrip'
   voidrip video "URL_VIDEO" --res 720
 
-  # Download dengan nama custom
-  voidrip video "URL_VIDEO" --res 720 -o "test.mp4"
+  # Download dengan nama file custom (tetap di 'Hasilvoidrip')
+  voidrip video "URL_VIDEO" -o "film_baru.mp4"
 
-\033[1;33mDOWNLOAD AUDIO (MP3):\033[0m
-  # Download audio default quality
-  voidrip audio "URL_VIDEO"
-
-  # Download audio dengan nama custom
-  voidrip audio "URL_VIDEO" -o "lagu_favorit.mp3"
+\033[1;33mCUSTOM FOLDER / LOKASI BEBAS (ADVANCED):\033[0m
+  # Gunakan path lengkap (Absolute Path) untuk menyimpan di luar 'Hasilvoidrip'
+  
+  # Contoh Windows (Misal ke Drive D):
+  voidrip video "URL" -o "D:\\Game\\VideoSaya.mp4"
+  
+  # Contoh Linux (Misal ke Desktop):
+  voidrip video "URL" -o "/home/user/Desktop/VideoSaya.mp4"
 
 \033[1;33mPERINTAH BANTU:\033[0m
-  voidrip --help
-  voidrip video --help
-  voidrip --version
+  voidrip --help       : Tampilkan bantuan ini
+  voidrip --update     : Update sistem core otomatis
+  voidrip --version    : Cek versi
 """
 
 def get_save_location(out_arg):
@@ -129,21 +131,35 @@ def main():
             print("\nSilakan jalankan ulang program.")
         sys.exit(0)
 
-    # --- LOGIKA PEMAKSA (FORCE SMART PATH) ---
-    # Bagian ini yang memperbaiki masalah Master.
-    # Jika user input manual (misal: -o "lagu.mp3"), kita cek apakah itu Absolute Path atau Relative.
-    # Jika Relative (cuma nama file), kita PAKSA gabungkan dengan base_dir (Hasilvoidrip).
+    # --- LOGIKA PEMAKSA CERDAS (SMART PATH OVERRIDE) ---
+    # Jika user memberikan input manual (-o), kita cek jenis inputnya.
     
     if hasattr(args, 'output'):
-        # Cek apakah path yang dimasukkan user BUKAN absolute path (tidak mulai dari / atau C:\)
+        # 1. Expand User symbol (~) jika ada (Contoh: ~/Desktop/video.mp4)
+        args.output = os.path.expanduser(args.output)
+        
+        # 2. Cek apakah ini Absolute Path?
+        # Absolute Path = C:\... atau /home/... (Artinya user mau lokasi khusus)
+        # Relative Path = "video.mp4" (Artinya user cuma kasih nama, lokasi ikut default)
+        
         if not os.path.isabs(args.output):
-            # Gabungkan folder Smart Storage dengan nama file input user
+            # Jika bukan absolute (Relative), PAKSA masuk ke folder Hasilvoidrip
             args.output = os.path.join(base_dir, args.output)
+        
+        # Jika Absolute, biarkan saja (User Override)
 
-    # Pastikan folder utama Hasilvoidrip dibuat
+    # Pastikan folder utama Hasilvoidrip dibuat (Hanya jika path mengarah ke sana)
     try:
-        if not os.path.exists(base_dir):
-            os.makedirs(base_dir, exist_ok=True)
+        # Kita ambil direktori dari output final
+        target_dir = os.path.dirname(args.output)
+        # Jika ada % (template), berarti folder belum fix, gunakan base_dir untuk safety
+        if "%" in target_dir: 
+            if not os.path.exists(base_dir):
+                os.makedirs(base_dir, exist_ok=True)
+        else:
+            # Jika path fix, buat foldernya jika belum ada
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir, exist_ok=True)
     except:
         pass
     # -----------------------------------------
