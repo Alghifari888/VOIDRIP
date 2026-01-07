@@ -57,17 +57,18 @@ CUSTOM_HELP_TEXT = """
 
 def get_save_location(out_arg):
     """Menghitung lokasi penyimpanan absolut untuk info user"""
+    # Fungsi ini memastikan tampilan lokasi file akurat
     if "%" in out_arg:
-        # Jika pakai template (default), file ada di folder output/working dir
+        # Jika masih format template yt-dlp
         d = os.path.dirname(out_arg)
         return os.path.abspath(d) if d else os.getcwd()
     else:
-        # Jika nama file fix, return full path filenya
+        # Jika path fix
         return os.path.abspath(out_arg)
 
 def main():
-    # --- SMART STORAGE LOGIC (AUTO DETECT USER) ---
-    # Mendapatkan Home Directory User yang sedang login (misal: /home/alghifari888 atau C:\Users\Japra)
+    # --- SMART STORAGE DEFINITION ---
+    # Mendapatkan Home Directory User yang sedang login
     home_dir = os.path.expanduser("~")
     
     if os.name == 'nt': # Jika Windows
@@ -77,8 +78,7 @@ def main():
         # Request: /home/User/Hasilvoidrip
         base_dir = os.path.join(home_dir, "Hasilvoidrip")
         
-    # Menyiapkan Template Path Default
-    # os.path.join akan otomatis pakai backslash (\) di Windows dan slash (/) di Linux
+    # Template Default (Jika user tidak pakai -o)
     default_video = os.path.join(base_dir, "%(title)s.%(ext)s")
     default_audio = os.path.join(base_dir, "%(title)s.%(ext)s")
     default_playlist = os.path.join(base_dir, "%(playlist_title)s", "%(title)s.%(ext)s")
@@ -99,20 +99,17 @@ def main():
     v = sub.add_parser("video", help="Download Video (MP4)")
     v.add_argument("url", help="Target URL")
     v.add_argument("--res", default="1080", choices=["360", "480", "720", "1080", "1440", "2160"], help="Resolution")
-    # Update Default Output menggunakan variabel smart path
     v.add_argument("-o", "--output", default=default_video, help="Output filename")
 
     # Audio Command
     a = sub.add_parser("audio", help="Download Audio (MP3)")
     a.add_argument("url", help="Target URL")
     a.add_argument("--bitrate", default="192", help="Bitrate (kbps)")
-    # Update Default Output
     a.add_argument("-o", "--output", default=default_audio, help="Output filename")
 
     # Playlist Command
     p = sub.add_parser("playlist", help="Download Playlist")
     p.add_argument("url", help="Target URL")
-    # Update Default Output (Untuk playlist otomatis buat subfolder nama playlistnya)
     p.add_argument("-o", "--output", default=default_playlist, help="Output directory")
     p.add_argument("--start", type=int, help="Start item")
     p.add_argument("--end", type=int, help="End item")
@@ -124,11 +121,32 @@ def main():
         sys.exit(0)
 
     args = parser.parse_args()
+    
+    # --- UPDATE COMMAND ---
     if args.update:
         show_banner()
         if utils.update_core():
             print("\nSilakan jalankan ulang program.")
         sys.exit(0)
+
+    # --- LOGIKA PEMAKSA (FORCE SMART PATH) ---
+    # Bagian ini yang memperbaiki masalah Master.
+    # Jika user input manual (misal: -o "lagu.mp3"), kita cek apakah itu Absolute Path atau Relative.
+    # Jika Relative (cuma nama file), kita PAKSA gabungkan dengan base_dir (Hasilvoidrip).
+    
+    if hasattr(args, 'output'):
+        # Cek apakah path yang dimasukkan user BUKAN absolute path (tidak mulai dari / atau C:\)
+        if not os.path.isabs(args.output):
+            # Gabungkan folder Smart Storage dengan nama file input user
+            args.output = os.path.join(base_dir, args.output)
+
+    # Pastikan folder utama Hasilvoidrip dibuat
+    try:
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir, exist_ok=True)
+    except:
+        pass
+    # -----------------------------------------
 
     show_banner()
     show_header()
@@ -158,7 +176,7 @@ def main():
         elif args.cmd == "playlist":
             success = downloader.download_playlist(args.url, args.output, args.start, args.end)
             
-        # Info Lokasi File (Fitur Baru)
+        # Info Lokasi File
         if success:
             save_path = get_save_location(args.output)
             print(f"\n   \033[1;38;5;46m[SAVED TO] >\033[0m {save_path}")
